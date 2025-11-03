@@ -14,10 +14,20 @@ if [ -d "subdomains" ]; then
 else
     mkdir subdomains
 fi
-while read domain; do subfinder -d $domain -silent | dnsx -silent > subdomains/$domain.txt; done < Wildcards.txt
+while read domain; do
+    subfinder -d "$domain" -silent | dnsx -silent > subdomains/$domain.txt
+done < Wildcards.txt
 
 # Crawling targets
 echo -e "\033[38;5;75mCrawling targets\033[0m"
-while read domain; do subfinder -d $domain -silent | dnsx -silent > subdomains/$domain.txt; done < Wildcards.txt
+if [ -d "targets" ]; then
+    echo "Folder 'targets' exists"
+    exit 1
+else
+    mkdir targets
+fi
+for target in subdomains/*.txt; do
+    katana -u "$target" -jc -silent | grep -vE '\.(css|jpg|jpeg|png|svg|img|gif|mp4|flv|pdf|doc|ogv|webm|wmv|webp|mov|mp3|m4a|m4p|ppt|pptx|scss|tif|tiff|ttf|otf|woff|woff2|bmp|ico|eot|htc|swf|rtf)(\?.*)?$' > targets/$target.txt
+done
 
 

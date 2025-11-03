@@ -15,3 +15,9 @@ else
     mkdir subdomains
 fi
 while read domain; do subfinder -d $domain -silent | dnsx -silent > subdomains/$domain.txt; done < Wildcards.txt
+
+# Crawling targets
+echo -e "\033[38;5;75mCrawling targets\033[0m"
+while read domain; do subfinder -d $domain -silent | dnsx -silent > subdomains/$domain.txt; done < Wildcards.txt
+
+

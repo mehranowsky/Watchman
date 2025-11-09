@@ -1,0 +1,2 @@
+domains have slash and paths so we can't crawl them:
+wildcards and subfinder them

@@ -43,8 +43,8 @@ def main():
         with open('Wildcards.txt', 'w') as f:
             for wildcard in wildcards:
                 f.write(wildcard + '\n')
-        print(f"Saved {len(urls)} URLs to URLs.txt")
-        print(f"Saved {len(wildcards)} wildcards to Wildcards.txt")
+        print(f"Saved {len(urls)} URLs to h1_URLs.txt")
+        print(f"Saved {len(wildcards)} wildcards to h1_Wildcards.txt")
         
     elif args.urls:
         # Print URLs

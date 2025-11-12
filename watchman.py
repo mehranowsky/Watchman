@@ -1,6 +1,9 @@
 import requests as req
 import re
 import argparse
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent
 
 def get_hackerone_data():
     uri = 'https://raw.githubusercontent.com/arkadiyt/bounty-targets-data/refs/heads/main/data/hackerone_data.json'
@@ -37,10 +40,10 @@ def main():
     
     if args.all:
         # Write to files
-        with open('URLs.txt', 'w') as f:
+        with open(f'{PROJECT_ROOT}/h1_URLs.txt', 'w') as f:
             for url in urls:
                 f.write(url + '\n')
-        with open('Wildcards.txt', 'w') as f:
+        with open(f'{PROJECT_ROOT}/h1_Wildcards.txt', 'w') as f:
             for wildcard in wildcards:
                 f.write(wildcard + '\n')
         print(f"Saved {len(urls)} URLs to h1_URLs.txt")

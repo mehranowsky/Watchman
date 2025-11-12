@@ -16,6 +16,7 @@ fi
 # Fetching data from hackerone
 echo -e "\033[38;5;75mFetching data from hackerone\033[0m"
 python3 watchman.py -a
+./notification.sh "Fetched data from h1"
 sleep 10
 
 # Clean h1_Wildcards.txt (remove * , scheme, path, port)
@@ -35,13 +36,14 @@ fi
 # Subdomain enumeration
 echo -e "\033[38;5;75mSubdomain enumeration\033[0m"
 mkdir -p "$SUB_DIR"
+./notification.sh "Starts subdomain enumeration..."
 
 while read -r domain; do
     [ -z "$domain" ] && continue
     subfinder -d "$domain" -all -silent -t 5 | sort -u | dnsx -silent -t 70 | httpx -silent -t 30 > "$SUB_DIR/$domain.txt"    
     sleep 5
 done < h1_Wildcards.txt
-
+./notification.sh "Completed subdomain enumeration and starts crawling..."
 sleep 10
 
 # Crawling subdomains and h1_URLs
@@ -87,4 +89,6 @@ if [ -f h1_URLs.txt ]; then
     done < h1_URLs.txt
 fi
 
+./notification.sh "Crawling completed!"
+./notification.sh "****End of tasks****"
 echo -e "\033[38;5;75mCrawling completed! (Subdomains + Watchman URLs)\033[0m"

@@ -38,7 +38,7 @@ mkdir -p "$SUB_DIR"
 
 while read -r domain; do
     [ -z "$domain" ] && continue
-    subfinder -d "$domain" -all -silent | sort -u | dnsx -silent | httpx -silent > "$SUB_DIR/$domain.txt"    
+    subfinder -d "$domain" -all -silent -t 5 | sort -u | dnsx -silent -t 70 | httpx -silent -t 30 > "$SUB_DIR/$domain.txt"    
     sleep 5
 done < h1_Wildcards.txt
 

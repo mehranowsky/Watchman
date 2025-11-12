@@ -8,4 +8,4 @@ CHANNEL_ID="CHANNEL_ID"
 MESSAGE="$1"
 
 # Use curl to send the message
-curl -s -X POST https://api.telegram.org/bot$API_TOKEN/sendMessage -d chat_id=$CHANNEL_ID -d text="$MESSAGE"
+curl -s -X POST https://api.telegram.org/bot$API_TOKEN/sendMessage -d chat_id=$CHANNEL_ID -d text="$MESSAGE" > /dev/null

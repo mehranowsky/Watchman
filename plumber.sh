@@ -74,7 +74,7 @@ crawl_url() {
 
 # Crawl subdomains
 for domain_file in "$SUB_DIR"/*.txt; do
-    [ -f "$domain_file" ] || continue
+    [ -s "$domain_file" ] || continue
     while read -r subdomain; do
         [ -z "$subdomain" ] && continue
         crawl_url "$subdomain"

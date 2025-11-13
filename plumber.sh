@@ -54,7 +54,7 @@ mkdir -p "$URL_DIR"
 crawl_url() {
     local url="$1"
     local file_name
-    file_name=$(echo "$url" | sed -E 's#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/[*]//g; s/%[0-9A-Fa-f]{2}/_/g;')
+    file_name=$(echo "$url" | sed -E 's#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/[*]//g; s/%[0-9A-Fa-f]{2}/_/g; s/^-/_/')
     local temp_file
     temp_file=$(mktemp)
 

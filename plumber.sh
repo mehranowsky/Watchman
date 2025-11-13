@@ -23,7 +23,7 @@ sleep 10
 # Clean h1_Wildcards.txt (remove * , scheme, path, port)
 if [ -f h1_Wildcards.txt ]; then
   sed -E 's/[*]//g; s#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/\.\././g; s/^[.]//; s/[.]$//' h1_Wildcards.txt \
-    | grep -v '^$' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
+    | grep -a -v '^$' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
 fi
 
 # Clean h1_URLs.txt (remove paths and query strings)
@@ -79,7 +79,7 @@ crawl_url() {
     sleep 2
     echo "$url" | katana -silent -jc 2>/dev/null >> "$temp_file"
 
-    if grep -vE '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$temp_file" \
+    if grep -a -vE '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$temp_file" \
         | sort -u | uro > "$URL_DIR/${file_name}.txt" && [ -s "$URL_DIR/${file_name}.txt" ]; then
         :
     else

@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH=$PATH:/usr/local/bin:/root/go/bin
 
 set -euo pipefail
 IFS=$'\n\t'

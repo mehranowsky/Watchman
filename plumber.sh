@@ -41,7 +41,7 @@ mkdir -p "$SUB_DIR"
 
 while read -r domain; do
     [ -z "$domain" ] && continue
-    clean_name=$(echo "$domain" | sed -E 's#^https?://##I;s#/.*$##;s/:[0-9]+$//;s/\*/_/g;s/%[0-9A-Fa-f]{2}/_/g;s/[^A-Za-z0-9._-]/_/g;s/_+/_/g;s/^[-_.]+//;s/[-_.]+$//;')
+    clean_name=$(echo "$domain" | sed -E 's#^https?://##I;s#/.*$##;s/:[0-9]+$//;s/[*]//g;s/%[0-9A-Fa-f]{2}/_/g;s/-+/_/g;s/^_+/_/;s/_+$//;')
     subfinder -d "$domain" -all -silent -t 5 | sort -u | dnsx -silent -t 70 | httpx -silent -t 30 > "$SUB_DIR/${clean_name}.txt"
     sleep 5
 done < h1_Wildcards.txt
@@ -55,7 +55,8 @@ mkdir -p "$URL_DIR"
 crawl_url() {
     local url="$1"
     local file_name
-    file_name=$(echo "$url" | sed -E 's#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/[*]//g; s/%[0-9A-Fa-f]{2}/_/g; s/^-/_/')
+    file_name=$(echo "$url" | sed -E 's#^https?://##I;s#/.*$##;s/:[0-9]+$//;s/[*]//g;s/%[0-9A-Fa-f]{2}/_/g;s/-+/_/g;s/^_+/_/;s/_+$//;')
+
     local temp_file
     temp_file=$(mktemp)
 

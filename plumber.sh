@@ -74,12 +74,9 @@ crawl_url() {
     sleep 2
     echo "$url" | katana -silent -jc 2>/dev/null >> "$URL_DIR/$file_name.tmp"
 
-    if grep -aEv '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$URL_DIR/$file_name.tmp" \
-        | sort -u | uro > "$URL_DIR/$file_name.txt" && [ -s "$URL_DIR/$file_name.txt" ]; then
-        :
-    else
-        rm -f "$URL_DIR/$file_name.txt"
-    fi
+    grep -aEv '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$URL_DIR/$file_name.tmp" | sort -u | uro > "$URL_DIR/$file_name.txt"
+
+    [ -s "$URL_DIR/$file_name.txt" ] || rm -f "$URL_DIR/$file_name.txt"
 
     rm -f "$URL_DIR/$file_name.tmp"
     sleep 5

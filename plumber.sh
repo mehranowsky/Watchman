@@ -50,7 +50,7 @@ while read -r domain <&3; do
         continue
     fi
 
-    dnsx -silent -l "$SUB_DIR/$clean_name.tmp" | httpx -silent > "$SUB_DIR/$clean_name.txt"
+    dnsx -silent -l -t 70 "$SUB_DIR/$clean_name.tmp" | httpx -silent -t 30 > "$SUB_DIR/$clean_name.txt"
     # If the final output file is empty, remove it
     [ -s "$SUB_DIR/$clean_name.txt" ] || rm -f "$SUB_DIR/$clean_name.txt"
 

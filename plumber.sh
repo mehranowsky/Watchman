@@ -22,8 +22,7 @@ sleep 10
 
 # Clean h1_Wildcards.txt (remove * , scheme, path, port)
 if [ -f h1_Wildcards.txt ]; then
-  sed -E 's/[*]//g; s#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/\.\././g; s/^[.]//; s/[.]$//' h1_Wildcards.txt \
-    | grep -a -v '^$' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
+  sed -E 's/[*]//g; s#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/\.\././g; s/^[.]//; s/[.]$//' h1_Wildcards.txt | grep -a -Ev '^$|^-' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
 fi
 
 # Clean h1_URLs.txt (remove paths and query strings)
@@ -39,26 +38,25 @@ echo -e "\033[38;5;75mSubdomain enumeration\033[0m"
 mkdir -p "$SUB_DIR"
 ./notification.sh "Starts subdomain enumeration..."
 
-while read -r domain; do
+while read -r domain <&3; do
     [ -z "$domain" ] && continue
     clean_name=$(echo "$domain" | sed -E 's#^https?://##I;s#/.*$##;s/:[0-9]+$//;s/[*]//g;s/%[0-9A-Fa-f]{2}/_/g;s/-+/_/g;s/^_+/_/;s/_+$//;')
-
-    tmp_subs=$(mktemp)
-    subfinder -d "$domain" -all -silent -t 5 | sort -u > "$tmp_subs"
+    
+    subfinder -d "$domain" -all -silent -t 5 | sort -u > "$SUB_DIR/$clean_name.tmp"
 
     # Skip empty results
-    if [ ! -s "$tmp_subs" ]; then
-        rm -f "$tmp_subs"
+    if [ ! -s "$SUB_DIR/$clean_name.tmp" ]; then
+        rm -f "$SUB_DIR/$clean_name.tmp"
         continue
     fi
 
-    dnsx -silent -t 70 -l "$tmp_subs" | httpx -silent -t 30 > "$SUB_DIR/${clean_name}.txt"
+    dnsx -silent -l "$SUB_DIR/$clean_name.tmp" | httpx -silent > "$SUB_DIR/$clean_name.txt"
     # If the final output file is empty, remove it
-    [ -s "$SUB_DIR/${clean_name}.txt" ] || rm -f "$SUB_DIR/${clean_name}.txt"
+    [ -s "$SUB_DIR/$clean_name.txt" ] || rm -f "$SUB_DIR/$clean_name.txt"
 
-    rm -f "$tmp_subs"
+    rm -f "$SUB_DIR/$clean_name.tmp"
     sleep 5
-done < h1_Wildcards.txt
+done 3< h1_Wildcards.txt
 
 ./notification.sh "Completed subdomain enumeration and starts crawling..."
 sleep 10
@@ -72,21 +70,18 @@ crawl_url() {
     local file_name
     file_name=$(echo "$url" | sed -E 's#^https?://##I;s#/.*$##;s/:[0-9]+$//;s/[*]//g;s/%[0-9A-Fa-f]{2}/_/g;s/-+/_/g;s/^_+/_/;s/_+$//;')
 
-    local temp_file
-    temp_file=$(mktemp)
-
-    echo "$url" | gau 2>/dev/null >> "$temp_file"
+    echo "$url" | gau 2>/dev/null > "$URL_DIR/$file_name.tmp"
     sleep 2
-    echo "$url" | katana -silent -jc 2>/dev/null >> "$temp_file"
+    echo "$url" | katana -silent -jc 2>/dev/null >> "$URL_DIR/$file_name.tmp"
 
-    if grep -a -vE '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$temp_file" \
-        | sort -u | uro > "$URL_DIR/${file_name}.txt" && [ -s "$URL_DIR/${file_name}.txt" ]; then
+    if grep -a -vE '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$URL_DIR/$file_name.tmp" \
+        | sort -u | uro > "$URL_DIR/$file_name.txt" && [ -s "$URL_DIR/$file_name.txt" ]; then
         :
     else
-        rm -f "$URL_DIR/${file_name}.txt"
+        rm -f "$URL_DIR/$file_name.txt"
     fi
 
-    rm -f "$temp_file"
+    rm -f "$URL_DIR/$file_name.tmp"
     sleep 5
 }
 

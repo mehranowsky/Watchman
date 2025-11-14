@@ -22,7 +22,7 @@ sleep 10
 
 # Clean h1_Wildcards.txt (remove * , scheme, path, port)
 if [ -f h1_Wildcards.txt ]; then
-  sed -E 's/[*]//g; s#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/\.\././g; s/^[.]//; s/[.]$//' h1_Wildcards.txt | grep -a -Ev '^$|^-' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
+  sed -E 's/[*]//g; s#^https?://##I; s#/.*$##; s/:[0-9]+$//; s/\.\././g; s/^[.]//; s/[.]$//' h1_Wildcards.txt | grep -aEv '^$|^-' | sort -u > h1_Wildcards.tmp && mv h1_Wildcards.tmp h1_Wildcards.txt
 fi
 
 # Clean h1_URLs.txt (remove paths and query strings)
@@ -50,7 +50,7 @@ while read -r domain <&3; do
         continue
     fi
 
-    dnsx -silent -l -t 70 "$SUB_DIR/$clean_name.tmp" | httpx -silent -t 30 > "$SUB_DIR/$clean_name.txt"
+    dnsx -silent -t 70 -l "$SUB_DIR/$clean_name.tmp" | httpx -silent -t 30 > "$SUB_DIR/$clean_name.txt"
     # If the final output file is empty, remove it
     [ -s "$SUB_DIR/$clean_name.txt" ] || rm -f "$SUB_DIR/$clean_name.txt"
 
@@ -74,7 +74,7 @@ crawl_url() {
     sleep 2
     echo "$url" | katana -silent -jc 2>/dev/null >> "$URL_DIR/$file_name.tmp"
 
-    if grep -a -vE '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$URL_DIR/$file_name.tmp" \
+    if grep -aEv '\.(css|jpg|jpeg|png|svg|gif|mp4|pdf|docx?|pptx?|mp3|webp|ico|woff2?|eot|tiff?|mov|avi|swf|rtf)(\?.*)?$' "$URL_DIR/$file_name.tmp" \
         | sort -u | uro > "$URL_DIR/$file_name.txt" && [ -s "$URL_DIR/$file_name.txt" ]; then
         :
     else
